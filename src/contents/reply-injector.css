@@ -1,0 +1,31 @@
+/* XBooster Reply Injector Styles */
+
+.xbooster-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1da1f2 0%, #9b59b6 100%);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(29, 161, 242, 0.3);
+}
+
+.xbooster-trigger:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.5);
+}
+
+.xbooster-trigger:active {
+    transform: scale(0.95);
+}
+
+.xbooster-panel-container {
+    width: 100%;
+    margin-bottom: 12px;
+}

@@ -1,50 +1,72 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# XBooster Constitution
+
+## 项目定位
+
+XBooster 是一个 AI 驱动的 X (Twitter) 内容创作与互动工具，采用**分阶段**策略：
+
+- **扩展内评论模式**：内嵌网页，快速生成高质量回复
+- **独立写作 Skill**：本地深度使用，完整的长文创作工作流
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. 双模式协同 (Dual-Mode Synergy)
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+评论模式追求速度和便捷；写作模式追求深度和质量。写作模式以独立 Skill 形态落地，扩展仅保留轻量入口或快速框架能力。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. 内容深度框架 (4D Content Framework)
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+所有长文内容创作必须经过 4D 分析：
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+- **哲学维度**：触及什么存在性问题？→ 增加深度
+- **心理学维度**：触发什么情绪/认知偏误？→ 增加共鸣
+- **传播学维度**：用什么框架组织信息？→ 增加可读性
+- **社会学维度**：涉及什么身份认同？→ 增加传播性
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### III. 去 AI 味 (De-AI Processing)
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+生成的内容必须经过去 AI 味处理，消除：
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- 空洞过渡词（"在当今社会"、"让我们共同努力"）
+- 模板化开头和说教式结尾
+- 连接词过密、破折号滥用
+- 爹味和老登味
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### IV. 质量稳定性 (Quality Consistency)
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+通过 6 维度自动评审确保输出质量稳定，低分内容触发自动修订。
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### V. 自进化能力 (RLHF Self-Evolution)
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+系统记录用户对生成内容的修改，持续学习用户偏好，提升个性化匹配度。
+
+### VI. 多 AI Provider 支持 (Multi-Provider)
+
+支持 Claude、GPT、Gemini、Grok 等多个 AI 服务，用户可按需切换。
+
+### VII. 隐私优先 (Privacy-First)
+
+所有 API Key 和用户偏好数据仅存储在本地，不上传任何服务器。
+
+## 产品边界
+
+### 包含
+
+- X 平台评论生成（内嵌）
+- 扩展内“快速框架/短内容”能力
+- 写作模式通过独立 Skill 提供（本地深度使用）
+
+### 不包含
+
+- 自动发布（用户手动复制/发布）
+- 账号管理
+- 数据分析/统计
+- 多账号切换
+
+## 版本路线图
+
+| 版本 | 核心功能 |
+|------|---------|
+| MVP (当前) | 评论模式 + 写作模式基础 |
+| V1.1 | 4D 选题分析 + 长文生成 |
+| V2.0 | 多平台适配 + 去 AI 味 |
+| V3.0 | RLHF 偏好学习 + 6 维度评审 |

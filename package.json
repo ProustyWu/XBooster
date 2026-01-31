@@ -1,0 +1,50 @@
+{
+  "name": "xbooster",
+  "displayName": "XBooster",
+  "version": "0.0.1",
+  "description": "AI-powered engagement optimization for X (Twitter)",
+  "author": "XBooster Team",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package",
+    "test": "vitest",
+    "test:e2e": "playwright test",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write src"
+  },
+  "dependencies": {
+    "plasmo": "^0.89.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@plasmohq/prettier-plugin-sort-imports": "^4.0.1",
+    "@types/chrome": "^0.0.268",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "postcss": "^8.4.41",
+    "prettier": "^3.3.3",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://x.com/*",
+      "https://twitter.com/*"
+    ],
+    "permissions": [
+      "storage",
+      "activeTab"
+    ]
+  }
+}

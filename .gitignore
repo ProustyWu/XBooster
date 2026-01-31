@@ -1,0 +1,33 @@
+# XBooster - AI-Powered X Engagement
+
+node_modules/
+build/
+.plasmo/
+dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+
+# Keys (never commit)
+*.key
+*.pem
