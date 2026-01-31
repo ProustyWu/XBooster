@@ -44,15 +44,14 @@ This opens Chrome with the extension loaded. Changes hot-reload automatically.
 1. Browse to any tweet on x.com
 2. Click the XBooster ✨ button near the reply button
 3. Select from 3 AI-generated replies
-4. Edit if needed, then post
+4. Edit if needed, then post manually
 
-### Tweet Composer
+### Quick Outline → Skill
 
 1. Click XBooster icon in toolbar
-2. Type your idea in the text box
-3. Click "Generate"
-4. Select your favorite variation
-5. Click "Post to X"
+2. Click “快速框架 → Skill”
+3. Type your topic and generate outlines
+4. Click “Copy for Skill” and continue in x-content-writer
 
 ## Project Commands
 
@@ -70,6 +69,7 @@ This opens Chrome with the extension loaded. Changes hot-reload automatically.
 src/
 ├── contents/       # Injected into X pages
 ├── popup/          # Extension popup UI
+├── background/     # Service worker (AI calls)
 ├── providers/      # AI provider adapters
 ├── services/       # Business logic
 └── storage/        # Chrome storage wrapper
