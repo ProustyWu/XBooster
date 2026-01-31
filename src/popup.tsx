@@ -3,7 +3,15 @@ import { useState, useEffect } from 'react'
 import { QuickOutline } from '~/components/QuickOutline'
 import type { ProviderType } from '~/providers/types'
 
-import './style.css'
+// Import CSS as text and inject into head
+import cssText from 'data-text:~/style.css'
+
+// Inject CSS once on mount
+if (typeof document !== 'undefined') {
+    const style = document.createElement('style')
+    style.textContent = cssText
+    document.head.appendChild(style)
+}
 
 type View = 'main' | 'quick-outline' | 'settings'
 
@@ -210,8 +218,8 @@ function SettingsView({ onClose }: { onClose: () => void }) {
             <button
                 onClick={saveSettings}
                 className={`w-full py-2 rounded-full font-medium transition-colors ${saved
-                        ? 'bg-green-500 text-white'
-                        : 'bg-x-blue text-white hover:bg-blue-600'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-x-blue text-white hover:bg-blue-600'
                     }`}
             >
                 {saved ? '✓ Saved!' : 'Save Settings'}

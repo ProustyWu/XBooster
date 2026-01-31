@@ -1,6 +1,6 @@
 import type { TweetContext } from "~/providers/types"
-import type { OutlineGeneratorResult } from "~/services/outline-generator"
-import type { SmartReplyResult } from "~/services/smart-reply"
+import type { OutlineGeneratorResult } from "~/services/outline-types"
+import type { SmartReplyResult } from "~/services/smart-reply-types"
 
 type SmartReplyMessage = {
   type: "XBOOSTER_SMART_REPLY"

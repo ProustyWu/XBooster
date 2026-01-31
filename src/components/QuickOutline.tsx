@@ -6,11 +6,8 @@
 import { useState } from 'react'
 
 import { LoadingSpinner } from '~/components/LoadingSpinner'
-import {
-    createHandoffPayload,
-    formatHandoffForClipboard,
-    type OutlineResult
-} from '~/services/outline-generator'
+import type { OutlineResult } from '~/services/outline-types'
+import { createHandoffPayload, formatHandoffForClipboard } from '~/services/handoff'
 import { requestOutlines } from '~/services/background-client'
 
 interface QuickOutlineProps {
@@ -101,8 +98,8 @@ export function QuickOutline({ onClose }: QuickOutlineProps) {
                             key={p.id}
                             onClick={() => setPlatform(p.id)}
                             className={`px-3 py-1.5 text-sm rounded-full transition-colors ${platform === p.id
-                                    ? 'bg-x-blue text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-x-blue text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {p.label}
@@ -143,8 +140,8 @@ export function QuickOutline({ onClose }: QuickOutlineProps) {
                             key={outline.id}
                             onClick={() => setSelectedId(outline.id)}
                             className={`p-3 rounded-xl border cursor-pointer transition-all ${selectedId === outline.id
-                                    ? 'border-x-blue bg-blue-50 ring-2 ring-x-blue/20'
-                                    : 'border-gray-200 hover:border-x-blue/50'
+                                ? 'border-x-blue bg-blue-50 ring-2 ring-x-blue/20'
+                                : 'border-gray-200 hover:border-x-blue/50'
                                 }`}
                         >
                             <h3 className="font-medium text-x-dark">{outline.title}</h3>

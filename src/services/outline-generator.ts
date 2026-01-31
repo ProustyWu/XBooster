@@ -4,29 +4,11 @@
  */
 
 import { getProviderContext } from '~/services/ai-client'
+import type { OutlineResult, OutlineGeneratorResult } from '~/services/outline-types'
 
-export interface OutlineResult {
-    id: string
-    title: string
-    points: string[]
-    hook: string
-    targetPlatform: string
-}
-
-export interface OutlineGeneratorResult {
-    success: boolean
-    outlines: OutlineResult[]
-    error?: string
-}
-
-export interface HandoffPayload {
-    topic: string
-    selectedOutline: OutlineResult
-    language: string
-    targetPlatform: string
-    timestamp: string
-    source: 'xbooster-extension'
-}
+// Re-export types for convenience
+export type { OutlineResult, HandoffPayload, OutlineGeneratorResult } from '~/services/outline-types'
+export { createHandoffPayload, formatHandoffForClipboard } from '~/services/handoff'
 
 /**
  * Generate quick outlines for a topic
@@ -140,49 +122,4 @@ function fallbackOutlines(platform: string): OutlineResult[] {
         hook: '',
         targetPlatform: platform
     }]
-}
-
-/**
- * Create handoff payload for x-content-writer Skill
- */
-export function createHandoffPayload(
-    topic: string,
-    outline: OutlineResult,
-    language: string = 'zh'
-): HandoffPayload {
-    return {
-        topic,
-        selectedOutline: outline,
-        language,
-        targetPlatform: outline.targetPlatform,
-        timestamp: new Date().toISOString(),
-        source: 'xbooster-extension'
-    }
-}
-
-/**
- * Format handoff payload as copyable text for Skill
- */
-export function formatHandoffForClipboard(payload: HandoffPayload): string {
-    return `---
-# XBooster Handoff
-topic: ${payload.topic}
-platform: ${payload.targetPlatform}
-language: ${payload.language}
-timestamp: ${payload.timestamp}
-source: ${payload.source}
----
-
-## 选定大纲
-
-### ${payload.selectedOutline.title}
-
-**开头钩子**：${payload.selectedOutline.hook}
-
-**要点**：
-${payload.selectedOutline.points.map((p, i) => `${i + 1}. ${p}`).join('\n')}
-
----
-请使用 x-content-writer skill 继续深度写作。
-`
 }

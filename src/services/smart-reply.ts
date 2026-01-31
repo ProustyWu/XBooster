@@ -6,20 +6,10 @@
 
 import type { TweetContext } from '~/providers/types'
 import { getProviderContext } from '~/services/ai-client'
+import type { ThinkingStep, SmartReplyResult } from '~/services/smart-reply-types'
 
-export interface ThinkingStep {
-    id: string
-    label: string
-    status: 'pending' | 'active' | 'done'
-    content?: string
-}
-
-export interface SmartReplyResult {
-    success: boolean
-    reply: string
-    thinking: ThinkingStep[]
-    error?: string
-}
+// Re-export types for convenience
+export type { ThinkingStep, SmartReplyResult } from '~/services/smart-reply-types'
 
 /**
  * Generate a smart reply with visible thinking process
