@@ -45,8 +45,7 @@ export function parseTweetElement(tweetElement: Element): TweetContext | null {
             timestamp: new Date(),
             metrics
         }
-    } catch (error) {
-        console.error('[XBooster] Error parsing tweet:', error)
+    } catch {
         return null
     }
 }

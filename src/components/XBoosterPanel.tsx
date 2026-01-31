@@ -6,11 +6,8 @@
 import { useEffect, useState } from 'react'
 
 import { LoadingSpinner } from '~/components/LoadingSpinner'
-import {
-    generateSmartReply,
-    type SmartReplyResult,
-    type ThinkingStep
-} from '~/services/smart-reply'
+import type { SmartReplyResult, ThinkingStep } from '~/services/smart-reply'
+import { requestSmartReply } from '~/services/background-client'
 import type { TweetContext } from '~/providers/types'
 
 interface XBoosterPanelProps {
@@ -34,9 +31,10 @@ export function XBoosterPanel({ context, onInsertReply, onClose }: XBoosterPanel
         setThinking([])
         setResult(null)
 
-        const res = await generateSmartReply(context, (steps) => {
-            setThinking([...steps])
-        })
+        const res = await requestSmartReply(context)
+        if (res.thinking?.length) {
+            setThinking([...res.thinking])
+        }
 
         setResult(res)
         setIsGenerating(false)

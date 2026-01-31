@@ -3,20 +3,7 @@
  * Generates quick outlines/short drafts for handoff to x-content-writer Skill
  */
 
-import { providerRegistry } from '~/providers'
-import { getApiKey, getSettings } from '~/storage/settings'
-
-// Import providers
-import { openaiProvider } from '~/providers/openai'
-import { claudeProvider } from '~/providers/claude'
-import { grokProvider } from '~/providers/grok'
-import { geminiProvider } from '~/providers/gemini'
-
-// Register providers
-providerRegistry.register(openaiProvider)
-providerRegistry.register(claudeProvider)
-providerRegistry.register(grokProvider)
-providerRegistry.register(geminiProvider)
+import { getProviderContext } from '~/services/ai-client'
 
 export interface OutlineResult {
     id: string
@@ -49,33 +36,11 @@ export async function generateOutlines(
     targetPlatform: string = 'x-long'
 ): Promise<OutlineGeneratorResult> {
     try {
-        const settings = await getSettings()
-        const providerType = settings.selectedProvider
-        const provider = providerRegistry.get(providerType)
-
-        if (!provider) {
-            return {
-                success: false,
-                outlines: [],
-                error: `Provider ${providerType} not found`
-            }
-        }
-
-        const apiKey = await getApiKey(providerType)
-        if (!apiKey) {
-            return {
-                success: false,
-                outlines: [],
-                error: `API key not configured for ${provider.name}`
-            }
-        }
-
-        provider.configure(apiKey)
+        const { provider } = await getProviderContext()
 
         // Generate outlines using the provider
         const prompt = buildOutlinePrompt(topic, targetPlatform)
-        const response = await callProviderForOutlines(provider, prompt)
-        const outlines = parseOutlinesResponse(response, targetPlatform)
+        const outlines = await callProviderForOutlines(provider, prompt, targetPlatform)
 
         return {
             success: true,
@@ -107,56 +72,72 @@ function buildOutlinePrompt(topic: string, platform: string): string {
    - 大纲3：故事/案例角度
 3. 开头钩子要抓人，禁止使用"在当今社会"等空洞开头
 
-请以 JSON 格式返回：
-{
-  "outlines": [
-    {
-      "title": "标题",
-      "points": ["要点1", "要点2", "要点3"],
-      "hook": "开头钩子"
-    }
-  ]
-}`
+请以如下严格格式返回 3 个对象的 JSON 数组（不要额外文本）：
+[
+  {
+    "text": "TITLE: ...\\nHOOK: ...\\nPOINTS:\\n- ...\\n- ...\\n- ...",
+    "strategy": "controversy|practical|story"
+  }
+]
+`
 }
 
 /**
  * Call provider API for outline generation
  */
-async function callProviderForOutlines(provider: any, prompt: string): Promise<string> {
-    // Use the provider's generateTweet method
-    const results = await provider.generateTweet(prompt, { mode: 'engaging', count: 1 })
-    return results[0]?.text || ''
-}
-
-/**
- * Parse outlines from AI response
- */
-function parseOutlinesResponse(response: string, platform: string): OutlineResult[] {
-    try {
-        // Try to extract JSON from response
-        const jsonMatch = response.match(/\{[\s\S]*\}/)
-        if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0])
-            if (parsed.outlines && Array.isArray(parsed.outlines)) {
-                return parsed.outlines.map((o: any, i: number) => ({
-                    id: `outline-${Date.now()}-${i}`,
-                    title: o.title || `大纲 ${i + 1}`,
-                    points: o.points || [],
-                    hook: o.hook || '',
-                    targetPlatform: platform
-                }))
-            }
-        }
-    } catch {
-        // Fallback: create simple outline from text
+async function callProviderForOutlines(
+    provider: any,
+    prompt: string,
+    platform: string
+): Promise<OutlineResult[]> {
+    const results = await provider.generateTweet(prompt, { mode: 'engaging', count: 3 })
+    if (!results?.length) {
+        return fallbackOutlines(platform)
     }
 
-    // Fallback outline
+    const outlines = results.map((item: { text?: string }, index: number) => {
+        const parsed = parseOutlineText(item.text || '')
+        return {
+            id: `outline-${Date.now()}-${index}`,
+            title: parsed.title || `大纲 ${index + 1}`,
+            points: parsed.points.length ? parsed.points : ['要点 1', '要点 2', '要点 3'],
+            hook: parsed.hook || '',
+            targetPlatform: platform
+        }
+    })
+
+    return outlines
+}
+
+function parseOutlineText(text: string): { title: string; hook: string; points: string[] } {
+    const lines = text.split('\n').map((line) => line.trim()).filter(Boolean)
+    let title = ''
+    let hook = ''
+    const points: string[] = []
+
+    for (const line of lines) {
+        if (line.startsWith('TITLE:')) {
+            title = line.replace('TITLE:', '').trim()
+            continue
+        }
+        if (line.startsWith('HOOK:')) {
+            hook = line.replace('HOOK:', '').trim()
+            continue
+        }
+        if (line.startsWith('-')) {
+            points.push(line.replace(/^-\s*/, '').trim())
+        }
+    }
+
+    return { title, hook, points }
+}
+
+function fallbackOutlines(platform: string): OutlineResult[] {
     return [{
         id: `outline-${Date.now()}-0`,
         title: '默认大纲',
         points: ['要点 1', '要点 2', '要点 3'],
-        hook: response.slice(0, 100),
+        hook: '',
         targetPlatform: platform
     }]
 }

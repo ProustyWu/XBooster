@@ -9,9 +9,9 @@ import { LoadingSpinner } from '~/components/LoadingSpinner'
 import {
     createHandoffPayload,
     formatHandoffForClipboard,
-    generateOutlines,
     type OutlineResult
 } from '~/services/outline-generator'
+import { requestOutlines } from '~/services/background-client'
 
 interface QuickOutlineProps {
     onClose: () => void
@@ -41,7 +41,7 @@ export function QuickOutline({ onClose }: QuickOutlineProps) {
         setOutlines([])
         setSelectedId(null)
 
-        const result = await generateOutlines(topic, platform)
+        const result = await requestOutlines(topic, platform)
 
         if (result.success) {
             setOutlines(result.outlines)

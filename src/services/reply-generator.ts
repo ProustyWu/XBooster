@@ -8,22 +8,10 @@ import type {
     GeneratedContent,
     GenerationOptions,
     ProviderType,
-
     TweetContext
 } from '~/providers/types'
-import { getApiKey, getSelectedProvider, getSettings } from '~/storage/settings'
-
-// Import and register all providers
-import { openaiProvider } from '~/providers/openai'
-import { claudeProvider } from '~/providers/claude'
-import { grokProvider } from '~/providers/grok'
-import { geminiProvider } from '~/providers/gemini'
-
-// Register providers on module load
-providerRegistry.register(openaiProvider)
-providerRegistry.register(claudeProvider)
-providerRegistry.register(grokProvider)
-providerRegistry.register(geminiProvider)
+import { getProviderContext } from '~/services/ai-client'
+import { getSelectedProvider, getSettings } from '~/storage/settings'
 
 export interface ReplyGeneratorResult {
     success: boolean
@@ -39,36 +27,14 @@ export async function generateReplies(
     options?: Partial<GenerationOptions>
 ): Promise<ReplyGeneratorResult> {
     try {
-        // Get settings
         const settings = await getSettings()
-        const providerType = settings.selectedProvider
-        const provider = providerRegistry.get(providerType)
-
-        if (!provider) {
-            return {
-                success: false,
-                replies: [],
-                error: `Provider ${providerType} not found`
-            }
-        }
-
-        // Configure provider with API key
-        const apiKey = await getApiKey(providerType)
-        if (!apiKey) {
-            return {
-                success: false,
-                replies: [],
-                error: `API key not configured for ${provider.name}`
-            }
-        }
-
-        provider.configure(apiKey)
+        const { provider } = await getProviderContext()
 
         // Generate replies
         const genOptions: GenerationOptions = {
             mode: settings.replyMode,
             count: options?.count || 3,
-            maxLength: options?.maxLength || 10000
+            maxLength: options?.maxLength || 280
         }
 
         const replies = await provider.generateReply(context, genOptions)

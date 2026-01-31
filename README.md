@@ -23,6 +23,7 @@ XBooster 是一个 Chrome 扩展，使用 AI 为 X (Twitter) 帖子生成高质�
 - **智能语言检测**：根据推文和作者名自动选择回复语言
 - **思考过程可视化**：展示 AI 的分析和策略
 - **去 AI 味**：生成自然、口语化的回复
+- **安全隔离**：AI 请求在扩展后台执行，避免页面脚本干扰
 
 ## 📦 安装
 
@@ -53,6 +54,34 @@ pnpm dev
 2. 选择 AI 提供商（推荐 Gemini）
 3. 输入对应的 API Key
 4. 保存设置
+
+## 🔐 权限说明
+
+本扩展需要以下权限：
+
+- `storage`：本地保存 API Key 与设置
+- `activeTab`：与当前 X 页面交互
+- `host_permissions`：仅访问 X 站点与所选 AI Provider 的官方 API 域名
+
+## 🧭 架构简述
+
+```
+UI (Content Script / Popup)
+        |
+        v
+Background Service Worker
+        |
+        v
+AI Provider APIs
+```
+
+说明：AI 请求在后台执行，页面脚本无法直接访问 API Key。
+
+## 🔒 安全与隐私
+
+- API Key 仅存储在本地浏览器存储中
+- AI 请求由扩展后台处理，页面脚本无法直接访问 API Key
+- 扩展仅访问 X 站点与所选 AI Provider 的官方 API 域名
 
 ### 获取 API Key
 
@@ -96,3 +125,10 @@ MIT
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+## 📄 开源文件
+
+- `LICENSE`
+- `PRIVACY.md`
+- `SECURITY.md`
+- `CONTRIBUTING.md`

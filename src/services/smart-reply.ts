@@ -4,20 +4,8 @@
  * with visible thinking process
  */
 
-import { providerRegistry } from '~/providers'
 import type { TweetContext } from '~/providers/types'
-import { getApiKey, getSettings } from '~/storage/settings'
-
-// Import and register providers
-import { openaiProvider } from '~/providers/openai'
-import { claudeProvider } from '~/providers/claude'
-import { grokProvider } from '~/providers/grok'
-import { geminiProvider } from '~/providers/gemini'
-
-providerRegistry.register(openaiProvider)
-providerRegistry.register(claudeProvider)
-providerRegistry.register(grokProvider)
-providerRegistry.register(geminiProvider)
+import { getProviderContext } from '~/services/ai-client'
 
 export interface ThinkingStep {
     id: string
@@ -59,19 +47,7 @@ export async function generateSmartReply(
     }
 
     try {
-        // Get provider
-        const settings = await getSettings()
-        const provider = providerRegistry.get(settings.selectedProvider)
-        if (!provider) {
-            return { success: false, reply: '', thinking: steps, error: 'Provider not found' }
-        }
-
-        const apiKey = await getApiKey(settings.selectedProvider)
-        if (!apiKey) {
-            return { success: false, reply: '', thinking: steps, error: 'API key not configured' }
-        }
-
-        provider.configure(apiKey)
+        const { provider } = await getProviderContext()
 
         // Step 1: Parse tweet
         updateStep('parse', 'active')
@@ -101,14 +77,19 @@ export async function generateSmartReply(
 
         // Step 4: Generate draft
         updateStep('generate', 'active')
-        const prompt = buildSmartReplyPrompt(context, sentiment, topic, selectedStrategy)
-        const draftReply = await callProviderForReply(provider, prompt)
+        const draftReply = await callProviderForReply(provider, context)
+        if (!draftReply) {
+            throw new Error('Empty reply from provider')
+        }
         updateStep('generate', 'done', `草稿: "${draftReply.slice(0, 50)}..."`)
 
         // Step 5: De-AI processing
         updateStep('deai', 'active')
         await delay(200)
         const deAIedReply = applyDeAIProcessing(draftReply)
+        if (!deAIedReply) {
+            throw new Error('Empty reply after processing')
+        }
         updateStep('deai', 'done', '已移除 AI 特征词汇和模板句式')
 
         // Step 6: Final output
@@ -134,37 +115,15 @@ export async function generateSmartReply(
 /**
  * Build smart reply prompt with context
  */
-function buildSmartReplyPrompt(
-    context: TweetContext,
-    sentiment: string,
-    topic: string,
-    strategy: string
-): string {
-    return `你是一个社交媒体互动专家。请根据以下推文生成一条自然、有趣的回复。
-
-原推文: "${context.text}"
-作者: @${context.author}
-语言: ${context.language}
-情感倾向: ${sentiment}
-主题: ${topic}
-回复策略: ${strategy}
-
-要求:
-1. 回复必须用 ${context.language === 'zh' ? '中文' : context.language === 'ja' ? '日语' : context.language === 'en' ? '英语' : '原推文语言'}
-2. 长度控制在 50-150 字符
-3. 语气自然口语化，像真人在聊天
-4. 禁止使用: "确实"、"非常"、"真的很"、"不得不说"、"希望"、表情符号过多
-5. 可以适当使用: 1-2个表情、口语词汇、反问句
-6. 要有独特观点或个人体验感
-
-只输出回复内容本身，不要任何解释。`
-}
-
 /**
  * Call provider for reply generation
  */
-async function callProviderForReply(provider: any, prompt: string): Promise<string> {
-    const results = await provider.generateTweet(prompt, { mode: 'engaging', count: 1 })
+async function callProviderForReply(provider: any, context: TweetContext): Promise<string> {
+    const results = await provider.generateReply(context, {
+        mode: 'engaging',
+        count: 1,
+        maxLength: 150
+    })
     return results[0]?.text || ''
 }
 

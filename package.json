@@ -40,7 +40,13 @@
   "manifest": {
     "host_permissions": [
       "https://x.com/*",
-      "https://twitter.com/*"
+      "https://twitter.com/*",
+      "https://api.openai.com/*",
+      "https://api.anthropic.com/*",
+      "https://api.x.ai/*",
+      "https://generativelanguage.googleapis.com/*",
+      "https://pbs.twimg.com/*",
+      "https://video.twimg.com/*"
     ],
     "permissions": [
       "storage",

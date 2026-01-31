@@ -96,8 +96,8 @@ function SettingsView({ onClose }: { onClose: () => void }) {
             if (result.xbooster_settings) {
                 setSettings(result.xbooster_settings)
             }
-        } catch (e) {
-            console.error('Failed to load settings:', e)
+        } catch {
+            // Ignore settings load errors in UI
         }
         setLoading(false)
     }
@@ -112,8 +112,8 @@ function SettingsView({ onClose }: { onClose: () => void }) {
             })
             setSaved(true)
             setTimeout(() => setSaved(false), 2000)
-        } catch (e) {
-            console.error('Failed to save settings:', e)
+        } catch {
+            // Ignore settings save errors in UI
         }
     }
 
