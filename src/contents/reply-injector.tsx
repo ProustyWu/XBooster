@@ -817,37 +817,62 @@ function setupButtons(panel: HTMLElement, backdrop: HTMLElement, reply: string, 
 }
 
 function insertReply(text: string) {
-    // 找到 X.com 的回复输入框
-    const textbox = document.querySelector('[data-testid="tweetTextarea_0"]') as HTMLElement
-    const editableDiv = textbox?.querySelector('[contenteditable="true"]') as HTMLElement
+    // 尝试多种选择器找到 X.com 的回复输入框
+    const selectors = [
+        '[data-testid="tweetTextarea_0"] [contenteditable="true"]',
+        '[data-testid="tweetTextarea_0RichTextInputContainer"] [contenteditable="true"]',
+        '[role="textbox"][contenteditable="true"]',
+        'div[contenteditable="true"][data-block="true"]',
+        '.public-DraftEditor-content[contenteditable="true"]',
+        '[contenteditable="true"][spellcheck]'
+    ]
+
+    let editableDiv: HTMLElement | null = null
+    for (const selector of selectors) {
+        editableDiv = document.querySelector(selector) as HTMLElement
+        if (editableDiv) {
+            console.log('📝 XBooster: Found input with selector:', selector)
+            break
+        }
+    }
 
     if (editableDiv) {
-        // 直接设置内容
-        editableDiv.focus()
+        try {
+            editableDiv.focus()
 
-        // 清空并设置新内容
-        editableDiv.innerHTML = ''
+            // 选中所有内容然后删除
+            const selection = window.getSelection()
+            const range = document.createRange()
+            range.selectNodeContents(editableDiv)
+            selection?.removeAllRanges()
+            selection?.addRange(range)
 
-        // 创建文本节点
-        const textNode = document.createTextNode(text)
-        editableDiv.appendChild(textNode)
+            // 使用 execCommand 插入文本 - 这会触发 React 状态更新
+            document.execCommand('insertText', false, text)
 
-        // 将光标移到末尾
-        const range = document.createRange()
-        range.selectNodeContents(editableDiv)
-        range.collapse(false) // 折叠到末尾
-        const selection = window.getSelection()
-        selection?.removeAllRanges()
-        selection?.addRange(range)
+            // 再次触发各种事件确保状态更新
+            editableDiv.dispatchEvent(new InputEvent('input', {
+                bubbles: true,
+                cancelable: true,
+                inputType: 'insertText',
+                data: text
+            }))
 
-        // 触发 input 事件让 X.com 感知变化
-        editableDiv.dispatchEvent(new Event('input', { bubbles: true }))
+            // 模拟 keyup 事件
+            editableDiv.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }))
 
-        console.log('✅ XBooster: Reply inserted')
-        return
+            console.log('✅ XBooster: Reply inserted successfully')
+            return
+        } catch (e) {
+            console.error('❌ XBooster: Insert failed:', e)
+        }
     }
 
     // 如果找不到输入框，复制到剪贴板
+    console.log('⚠️ XBooster: No input found, copying to clipboard. Available contenteditable elements:')
+    document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
+        console.log(`  ${i}:`, el.className, el.getAttribute('data-testid'))
+    })
     navigator.clipboard.writeText(text)
     alert('已复制到剪贴板，请手动粘贴')
 }
